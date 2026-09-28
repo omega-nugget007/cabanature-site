@@ -99,9 +99,9 @@
     }
 
     .calendar-day.selected {
-      background: #213322;
-      color: #fff;
-      border-color: #213322;
+      background: #213322 !important;
+      color: #fff !important;
+      border-color: #213322 !important;
     }
 
     .calendar-day.full {
@@ -109,6 +109,12 @@
       color: #c62828;
       cursor: not-allowed;
       border-color: #ffcdd2;
+    }
+
+    .calendar-day.available {
+      background: #eef4ee;
+      color: #213322;
+      border-color: #c5d8c5;
     }
 
     .price-summary {
@@ -193,12 +199,12 @@
         <div class="form-group">
           <label for="courseSelect">1. Choisissez un atelier *</label>
           <select id="courseSelect" required>
-            <option value="botanique" data-price="45">Reconnaître les plantes sauvages (45 €/pers)</option>
-            <option value="bushcraft" data-price="75">Survie douce en forêt (75 €/pers)</option>
-            <option value="ornithologie" data-price="30">Observer les oiseaux au lever du jour (30 €/pers)</option>
-            <option value="bois" data-price="55">Sculpter sa première cuillère (55 €/pers)</option>
-            <option value="champignons" data-price="40">Champignons : cueillir sans se tromper (40 €/pers)</option>
-            <option value="bain-foret" data-price="25">Bain de forêt guidé (25 €/pers)</option>
+            <option value="1" data-price="45">Reconnaître les plantes sauvages (45 €/pers)</option>
+            <option value="2" data-price="75">Survie douce en forêt (75 €/pers)</option>
+            <option value="3" data-price="30">Observer les oiseaux au lever du jour (30 €/pers)</option>
+            <option value="4" data-price="55">Sculpter sa première cuillère (55 €/pers)</option>
+            <option value="5" data-price="40">Champignons : cueillir sans se tromper (40 €/pers)</option>
+            <option value="6" data-price="25">Bain de forêt guidé (25 €/pers)</option>
           </select>
         </div>
 
@@ -268,10 +274,8 @@
   </main>
 
 <script>
-    // Récupération dynamique de l'URL de l'API (injectée par Render ou valeur de secours)
     const API_URL = window.ENV_API_URL || "https://elderly-albums-maintains-printed.trycloudflare.com";
 
-    // Variables globales du calendrier
     const courseSelect = document.getElementById('courseSelect');
     const participantsInput = document.getElementById('participants');
     const selectedDateInput = document.getElementById('selectedDateInput');
@@ -283,7 +287,6 @@
 
     let bookedDates = {};
 
-    // 1. Calcul du prix total
     function updatePrice() {
       const selectedOption = courseSelect.options[courseSelect.selectedIndex];
       const pricePerPerson = parseFloat(selectedOption.getAttribute('data-price')) || 0;
@@ -292,7 +295,6 @@
       priceSummary.textContent = `Total : ${total} €`;
     }
 
-    // 2. Charger les disponibilités depuis l'API dynamique
     async function loadAvailability() {
       const courseId = courseSelect.value;
       try {
@@ -311,7 +313,6 @@
       renderCalendar();
     }
 
-    // 3. Générer le calendrier pour le mois en cours
     function renderCalendar() {
       calendarGrid.innerHTML = '';
       const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
@@ -324,31 +325,41 @@
       });
 
       const today = new Date();
-      for (let i = 1; i <= 28; i++) {
+      const year = today.getFullYear();
+      const month = today.getMonth();
+      
+      // Obtenir le nombre de jours dans le mois en cours
+      const totalDays = new Date(year, month + 1, 0).getDate();
+
+      for (let i = 1; i <= totalDays; i++) {
         const dayDiv = document.createElement('div');
         dayDiv.className = 'calendar-day';
 
-        const monthStr = String(today.getMonth() + 1).padStart(2, '0');
+        const monthStr = String(month + 1).padStart(2, '0');
         const dayStr = String(i).padStart(2, '0');
-        const dateFormatted = `${today.getFullYear()}-${monthStr}-${dayStr}`;
+        const dateFormatted = `${year}-${monthStr}-${dayStr}`;
 
         dayDiv.textContent = i;
 
-        const dayOfWeek = (i % 7); 
-        if (dayOfWeek === 6 || dayOfWeek === 0) {
-          const seats = bookedDates[dateFormatted] || 0;
-          if (seats >= 8) {
-            dayDiv.classList.add('full');
-            dayDiv.title = 'Complet';
-          } else {
-            dayDiv.addEventListener('click', () => {
-              document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
-              dayDiv.classList.add('selected');
-              selectedDateInput.value = dateFormatted;
-            });
-          }
+        // Calculer le jour de la semaine pour positionner (0 = Dimanche, 6 = Samedi)
+        const currentFullDate = new Date(year, month, i);
+        const dayOfWeek = currentFullDate.getDay(); 
+
+        const seats = bookedDates[dateFormatted] || 0;
+        const maxCapacity = 8; // Capacité max par défaut de l'atelier
+
+        // Si la session est complète (8 places ou plus)
+        if (seats >= maxCapacity) {
+          dayDiv.classList.add('full');
+          dayDiv.title = 'Complet';
         } else {
-          dayDiv.classList.add('disabled');
+          // Disponible
+          dayDiv.classList.add('available');
+          dayDiv.addEventListener('click', () => {
+            document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
+            dayDiv.classList.add('selected');
+            selectedDateInput.value = dateFormatted;
+          });
         }
 
         if (selectedDateInput.value === dateFormatted) {
@@ -359,7 +370,6 @@
       }
     }
 
-    // 4. Envoi du formulaire à l'API dynamique
     registrationForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
