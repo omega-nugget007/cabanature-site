@@ -268,6 +268,9 @@
   </main>
 
 <script>
+    // Récupération dynamique de l'URL de l'API (injectée par Render ou valeur de secours)
+    const API_URL = window.ENV_API_URL || "https://elderly-albums-maintains-printed.trycloudflare.com";
+
     // Variables globales du calendrier
     const courseSelect = document.getElementById('courseSelect');
     const participantsInput = document.getElementById('participants');
@@ -289,11 +292,11 @@
       priceSummary.textContent = `Total : ${total} €`;
     }
 
-    // 2. Charger les disponibilités depuis l'API
+    // 2. Charger les disponibilités depuis l'API dynamique
     async function loadAvailability() {
       const courseId = courseSelect.value;
       try {
-        const response = await fetch(`https://62-235-2-27.nip.io/api/availability/${courseId}`);
+        const response = await fetch(`${API_URL}/api/availability/${courseId}`);
         if (response.ok) {
           const data = await response.json();
           bookedDates = {};
@@ -303,7 +306,7 @@
           });
         }
       } catch (err) {
-        console.error("Erreur de chargement des disponibilités (Mode hors-ligne ou API injoignable):", err);
+        console.error("Erreur de chargement des disponibilités :", err);
       }
       renderCalendar();
     }
@@ -320,20 +323,17 @@
         calendarGrid.appendChild(div);
       });
 
-      // Générer 28 jours d'exemple pour la démo
       const today = new Date();
       for (let i = 1; i <= 28; i++) {
         const dayDiv = document.createElement('div');
         dayDiv.className = 'calendar-day';
 
-        // Formater la date en YYYY-MM-DD
         const monthStr = String(today.getMonth() + 1).padStart(2, '0');
         const dayStr = String(i).padStart(2, '0');
         const dateFormatted = `${today.getFullYear()}-${monthStr}-${dayStr}`;
 
         dayDiv.textContent = i;
 
-        // Rendre les week-ends réservables
         const dayOfWeek = (i % 7); 
         if (dayOfWeek === 6 || dayOfWeek === 0) {
           const seats = bookedDates[dateFormatted] || 0;
@@ -359,7 +359,7 @@
       }
     }
 
-    // 4. Envoi du formulaire à l'API (CORRIGÉ vers /api/inscription)
+    // 4. Envoi du formulaire à l'API dynamique
     registrationForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -383,7 +383,7 @@
       };
 
       try {
-        const response = await fetch('https://62-235-2-27.nip.io/api/inscription', {
+        const response = await fetch(`${API_URL}/api/inscription`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -416,14 +416,12 @@
       }
     });
 
-    // Événements d'écoute
     courseSelect.addEventListener('change', () => {
       updatePrice();
       loadAvailability();
     });
     participantsInput.addEventListener('change', updatePrice);
 
-    // Initialisation au chargement de la page
     updatePrice();
     loadAvailability();
   </script>
