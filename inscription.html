@@ -267,7 +267,7 @@
     </div>
   </main>
 
-  <script>
+<script>
     // Variables globales du calendrier
     const courseSelect = document.getElementById('courseSelect');
     const participantsInput = document.getElementById('participants');
@@ -303,12 +303,12 @@
           });
         }
       } catch (err) {
-        console.error("Erreur de chargement des disponibilités:", err);
+        console.error("Erreur de chargement des disponibilités (Mode hors-ligne ou API injoignable):", err);
       }
       renderCalendar();
     }
 
-    // 3. Générer le calendrier fictif pour le mois en cours
+    // 3. Générer le calendrier pour le mois en cours
     function renderCalendar() {
       calendarGrid.innerHTML = '';
       const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
@@ -359,7 +359,7 @@
       }
     }
 
-    // 4. Envoi du formulaire à l'API
+    // 4. Envoi du formulaire à l'API (CORRIGÉ vers /api/inscription)
     registrationForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -383,7 +383,7 @@
       };
 
       try {
-        const response = await fetch('https://62-235-2-27.nip.io/api/availability/', {
+        const response = await fetch('https://62-235-2-27.nip.io/api/inscription', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -394,7 +394,7 @@
         if (response.ok) {
           statusMessage.className = 'status-message success';
           statusMessage.innerHTML = `
-            <strong>Réservation #${result.bookingId} confirmée !</strong><br>
+            <strong>Réservation #${result.bookingId || 'réussie'} confirmée !</strong><br>
             Un e-mail de confirmation a été envoyé à <em>${payload.email}</em>.
           `;
           statusMessage.style.display = 'block';
