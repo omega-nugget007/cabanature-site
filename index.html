@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cabanature — Apprendre dehors</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" class="logo"><span class="leaf"></span>Cabanature</a>
+  
+  <button class="mobile-toggle" id="menuToggle" aria-label="Ouvrir le menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+
+  <nav class="main-nav" id="mainNav">
+    <a href="index.html" aria-current="page">Accueil</a>
+    <a href="cours.html">Cours</a>
+    <a href="inscription.html" class="nav-cta">Inscription</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <p class="hero-eyebrow">Cours pour toutes et tous</p>
+    <h1>Cabanature, les cours en pleine nature</h1>
+    <p class="lede">Cabanature organise des cours en pleine nature autour du bois, des plantes et de la vie sauvage.</p>
+    <div class="hero-actions">
+      <a href="cours.html" class="btn btn-primary">Voir les cours</a>
+      <a href="#pourquoi" class="btn btn-ghost">Pourquoi Cabanature</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="pourquoi">
+  <div class="section-head">
+    <h2>Ce qu'on apprend n'est jamais dans un livre</h2>
+    <p>Chaque atelier a lieu en extérieur, mains dans la terre ou dans le bois, avec un groupe de huit personnes maximum.</p>
+  </div>
+  <div class="pillars">
+    <div class="pillar">
+      <p class="num">Terrain</p>
+      <h3>Toujours dehors</h3>
+      <p>Forêt, clairière ou rivière : aucun atelier ne se donne en salle. Le lieu fait partie de l'apprentissage.</p>
+    </div>
+    <div class="pillar">
+      <p class="num">Groupe</p>
+      <h3>Petits effectifs</h3>
+      <p>Huit personnes maximum par session, pour que chacun ait le temps de pratiquer avec l'animateur.</p>
+    </div>
+    <div class="pillar">
+      <p class="num">Transmission</p>
+      <h3>Des praticiens, pas des profs</h3>
+      <p>Bûcherons, herboristes, guides naturalistes : chaque cours est mené par quelqu'un qui vit de son savoir-faire.</p>
+    </div>
+  </div>
+</section>
+
+<div class="quote-band">
+  <blockquote>
+    On ne retient pas le nom d'une plante en le lisant. On le retient en la cueillant, en la sentant, en se trompant une fois.
+    <cite>— Julie, animatrice botanique</cite>
+  </blockquote>
+</div>
+
+<section class="cta-band">
+  <h2>Le prochain cours commence bientôt</h2>
+  <a href="cours.html" class="btn btn-primary">Découvrir les cours</a>
+</section>
+
+<footer class="site-footer">
+  <div class="logo"><span class="leaf"></span>Cabanature</div>
+  <p>Cours en pleine nature en petits groupes.</p>
+</footer>
+
+<script>
+  // Gestion Menu Mobile
+  const menuToggle = document.getElementById('menuToggle');
+  const mainNav = document.getElementById('mainNav');
+
+  if (menuToggle && mainNav) {
+    menuToggle.addEventListener('click', () => {
+      const isOpen = mainNav.classList.toggle('active');
+      menuToggle.setAttribute('aria-expanded', isOpen);
+    });
+  }
+</script>
+
+</body>
+</html>

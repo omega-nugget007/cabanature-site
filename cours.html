@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cours — Cabanature</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" class="logo"><span class="leaf"></span>Cabanature</a>
+  
+  <button class="mobile-toggle" id="menuToggle" aria-label="Ouvrir le menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+
+  <nav class="main-nav" id="mainNav">
+    <a href="index.html">Accueil</a>
+    <a href="cours.html" aria-current="page">Cours</a>
+    <a href="inscription.html" class="nav-cta">Inscription</a>
+  </nav>
+</header>
+
+<section class="courses-intro">
+  <h1>Nos cours</h1>
+  <p>Six ateliers réguliers, chacun limité à huit places. Choisissez le vôtre et réservez votre créneau.</p>
+</section>
+
+<div class="course-grid">
+
+  <article class="course-card" style="--course-accent:#2e5a32">
+    <p class="course-tag">Botanique</p>
+    <h3>Reconnaître les plantes sauvages</h3>
+    <p class="desc">Apprenez à identifier et cueillir en toute sécurité une trentaine de plantes comestibles locales, au fil des saisons.</p>
+    <div class="course-meta">
+      <span>3h · en forêt</span>
+      <span>45 €</span>
+    </div>
+    <a href="inscription.html?cours=botanique" class="btn">S'inscrire</a>
+  </article>
+
+  <article class="course-card" style="--course-accent:#5a4632">
+    <p class="course-tag">Bushcraft</p>
+    <h3>Survie douce en forêt</h3>
+    <p class="desc">Allumer un feu sans briquet, construire un abri, purifier l'eau : les bases pour être autonome une nuit dehors.</p>
+    <div class="course-meta">
+      <span>Journée complète</span>
+      <span>75 €</span>
+    </div>
+    <a href="inscription.html?cours=bushcraft" class="btn">S'inscrire</a>
+  </article>
+
+  <article class="course-card" style="--course-accent:#c69a3c">
+    <p class="course-tag">Ornithologie</p>
+    <h3>Observer les oiseaux au lever du jour</h3>
+    <p class="desc">Sortie matinale au bord de l'eau pour apprendre à reconnaître les chants et les silhouettes des oiseaux locaux.</p>
+    <div class="course-meta">
+      <span>2h30 · à l'aube</span>
+      <span>30 €</span>
+    </div>
+    <a href="inscription.html?cours=ornithologie" class="btn">S'inscrire</a>
+  </article>
+
+  <article class="course-card" style="--course-accent:#8a5a3c">
+    <p class="course-tag">Travail du bois</p>
+    <h3>Sculpter sa première cuillère</h3>
+    <p class="desc">Initiation à la taille au couteau : choisir son bois, dégrossir, façonner une cuillère que vous repartirez avec vous.</p>
+    <div class="course-meta">
+      <span>4h · atelier extérieur</span>
+      <span>55 €</span>
+    </div>
+    <a href="inscription.html?cours=bois" class="btn">S'inscrire</a>
+  </article>
+
+  <article class="course-card" style="--course-accent:#4c6b4e">
+    <p class="course-tag">Cueillette</p>
+    <h3>Champignons : cueillir sans se tromper</h3>
+    <p class="desc">Sortie encadrée par un mycologue pour apprendre les critères de reconnaissance et éviter les espèces dangereuses.</p>
+    <div class="course-meta">
+      <span>3h · en sous-bois</span>
+      <span>40 €</span>
+    </div>
+    <a href="inscription.html?cours=champignons" class="btn">S'inscrire</a>
+  </article>
+
+  <article class="course-card" style="--course-accent:#9c7a3f">
+    <p class="course-tag">Bien-être</p>
+    <h3>Bain de forêt guidé</h3>
+    <p class="desc">Marche lente et exercices sensoriels pour ralentir et se reconnecter à la forêt, sans objectif de performance.</p>
+    <div class="course-meta">
+      <span>1h30 · toute l'année</span>
+      <span>25 €</span>
+    </div>
+    <a href="inscription.html?cours=bain-foret" class="btn">S'inscrire</a>
+  </article>
+
+</div>
+
+<footer class="site-footer">
+  <div class="logo"><span class="leaf"></span>Cabanature</div>
+  <p>Ateliers nature en petits groupes.</p>
+</footer>
+
+<script>
+  const menuToggle = document.getElementById('menuToggle');
+  const mainNav = document.getElementById('mainNav');
+
+  if (menuToggle && mainNav) {
+    menuToggle.addEventListener('click', () => {
+      const isOpen = mainNav.classList.toggle('active');
+      menuToggle.setAttribute('aria-expanded', isOpen);
+    });
+  }
+</script>
+
+</body>
+</html>

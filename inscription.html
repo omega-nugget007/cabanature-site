@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inscription & Réservation — Cabanature</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Styles spécifiques au calendrier et au formulaire d'inscription */
+    .booking-container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .form-card {
+      background: #ffffff;
+      border: 1px solid #e5dfd3;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #213322;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 20px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+    /* Calendrier custom */
+    .calendar-wrapper {
+      margin: 20px 0;
+      border: 1px solid #e5dfd3;
+      border-radius: 8px;
+      padding: 15px;
+      background: #faf8f5;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      text-align: center;
+    }
+
+    .calendar-day-head {
+      font-weight: bold;
+      color: #666;
+      font-size: 14px;
+      padding-bottom: 5px;
+    }
+
+    .calendar-day {
+      padding: 12px 5px;
+      border-radius: 6px;
+      background: #fff;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .calendar-day.disabled {
+      background: #eee;
+      color: #aaa;
+      cursor: not-allowed;
+      border-color: #eee;
+    }
+
+    .calendar-day.selected {
+      background: #213322;
+      color: #fff;
+      border-color: #213322;
+    }
+
+    .calendar-day.full {
+      background: #ffebee;
+      color: #c62828;
+      cursor: not-allowed;
+      border-color: #ffcdd2;
+    }
+
+    .price-summary {
+      background: #eef4ee;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      font-size: 18px;
+      font-weight: bold;
+      color: #213322;
+      text-align: right;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: #213322;
+      color: #fff;
+      padding: 15px;
+      border: none;
+      border-radius: 6px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-submit:hover {
+      background: #324a34;
+    }
+
+    .btn-submit:disabled {
+      background: #888;
+      cursor: not-allowed;
+    }
+
+    .status-message {
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 20px;
+      display: none;
+    }
+
+    .status-message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .status-message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    @media (max-width: 600px) {
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="logo">🌿 Cabanature</div>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="cours.html">Nos Ateliers</a>
+      <a href="inscription.html" class="active">Réservation</a>
+    </nav>
+  </header>
+
+  <main class="booking-container">
+    <h1>Réservation d'un atelier</h1>
+    <p>Choisissez votre atelier, votre date et remplissez vos informations pour réserver votre place.</p>
+
+    <div class="form-card">
+      <form id="registrationForm">
+        
+        <!-- Sélecteur de Cours -->
+        <div class="form-group">
+          <label for="courseSelect">1. Choisissez un atelier *</label>
+          <select id="courseSelect" required>
+            <option value="botanique" data-price="45">Reconnaître les plantes sauvages (45 €/pers)</option>
+            <option value="bushcraft" data-price="75">Survie douce en forêt (75 €/pers)</option>
+            <option value="ornithologie" data-price="30">Observer les oiseaux au lever du jour (30 €/pers)</option>
+            <option value="bois" data-price="55">Sculpter sa première cuillère (55 €/pers)</option>
+            <option value="champignons" data-price="40">Champignons : cueillir sans se tromper (40 €/pers)</option>
+            <option value="bain-foret" data-price="25">Bain de forêt guidé (25 €/pers)</option>
+          </select>
+        </div>
+
+        <!-- Nombre de participants -->
+        <div class="form-group">
+          <label for="participants">2. Nombre de participants *</label>
+          <select id="participants" required>
+            <option value="1">1 personne</option>
+            <option value="2">2 personnes</option>
+            <option value="3">3 personnes</option>
+            <option value="4">4 personnes</option>
+          </select>
+        </div>
+
+        <!-- Calendrier Dynamique -->
+        <div class="form-group">
+          <label>3. Choisissez une date disponible *</label>
+          <div class="calendar-wrapper">
+            <div class="calendar-header">
+              <strong id="monthYearTitle">Octobre 2026</strong>
+            </div>
+            <div class="calendar-grid" id="calendarGrid">
+              <!-- Rempli en JS -->
+            </div>
+          </div>
+          <input type="hidden" id="selectedDateInput" required>
+        </div>
+
+        <!-- Coordonnées -->
+        <h3>4. Vos Coordonnées</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">Prénom *</label>
+            <input type="text" id="firstName" placeholder="Jean" required>
+          </div>
+          <div class="form-group">
+            <label for="lastName">Nom *</label>
+            <input type="text" id="lastName" placeholder="Dupont" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">Adresse E-mail *</label>
+            <input type="email" id="email" placeholder="jean.dupont@exemple.fr" required>
+          </div>
+          <div class="form-group">
+            <label for="phone">Numéro de téléphone *</label>
+            <input type="tel" id="phone" placeholder="06 12 34 56 78" required>
+          </div>
+        </div>
+
+        <!-- Récapitulatif du prix -->
+        <div class="price-summary" id="priceSummary">
+          Total : 45 €
+        </div>
+
+        <!-- Bouton Valider -->
+        <button type="submit" class="btn-submit" id="submitBtn">Valider la réservation</button>
+
+      </form>
+
+      <!-- Message de confirmation ou erreur -->
+      <div id="statusMessage" class="status-message"></div>
+    </div>
+  </main>
+
+  <script>
+    // Variables globales du calendrier
+    const courseSelect = document.getElementById('courseSelect');
+    const participantsInput = document.getElementById('participants');
+    const selectedDateInput = document.getElementById('selectedDateInput');
+    const priceSummary = document.getElementById('priceSummary');
+    const calendarGrid = document.getElementById('calendarGrid');
+    const registrationForm = document.getElementById('registrationForm');
+    const statusMessage = document.getElementById('statusMessage');
+    const submitBtn = document.getElementById('submitBtn');
+
+    let bookedDates = {};
+
+    // 1. Calcul du prix total
+    function updatePrice() {
+      const selectedOption = courseSelect.options[courseSelect.selectedIndex];
+      const pricePerPerson = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+      const count = parseInt(participantsInput.value) || 1;
+      const total = pricePerPerson * count;
+      priceSummary.textContent = `Total : ${total} €`;
+    }
+
+    // 2. Charger les disponibilités depuis l'API
+    async function loadAvailability() {
+      const courseId = courseSelect.value;
+      try {
+        const response = await fetch(`/api/availability/${courseId}`);
+        if (response.ok) {
+          const data = await response.json();
+          bookedDates = {};
+          data.forEach(item => {
+            const dateStr = item.session_date.split('T')[0];
+            bookedDates[dateStr] = item.booked_seats;
+          });
+        }
+      } catch (err) {
+        console.error("Erreur de chargement des disponibilités:", err);
+      }
+      renderCalendar();
+    }
+
+    // 3. Générer le calendrier fictif pour le mois en cours
+    function renderCalendar() {
+      calendarGrid.innerHTML = '';
+      const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+      
+      daysOfWeek.forEach(day => {
+        const div = document.createElement('div');
+        div.className = 'calendar-day-head';
+        div.textContent = day;
+        calendarGrid.appendChild(div);
+      });
+
+      // Générer 28 jours d'exemple pour la démo
+      const today = new Date();
+      for (let i = 1; i <= 28; i++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'calendar-day';
+
+        // Formater la date en YYYY-MM-DD
+        const monthStr = String(today.getMonth() + 1).padStart(2, '0');
+        const dayStr = String(i).padStart(2, '0');
+        const dateFormatted = `${today.getFullYear()}-${monthStr}-${dayStr}`;
+
+        dayDiv.textContent = i;
+
+        // Rendre les week-ends réservables
+        const dayOfWeek = (i % 7); 
+        if (dayOfWeek === 6 || dayOfWeek === 0) {
+          const seats = bookedDates[dateFormatted] || 0;
+          if (seats >= 8) {
+            dayDiv.classList.add('full');
+            dayDiv.title = 'Complet';
+          } else {
+            dayDiv.addEventListener('click', () => {
+              document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
+              dayDiv.classList.add('selected');
+              selectedDateInput.value = dateFormatted;
+            });
+          }
+        } else {
+          dayDiv.classList.add('disabled');
+        }
+
+        if (selectedDateInput.value === dateFormatted) {
+          dayDiv.classList.add('selected');
+        }
+
+        calendarGrid.appendChild(dayDiv);
+      }
+    }
+
+    // 4. Envoi du formulaire à l'API
+    registrationForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!selectedDateInput.value) {
+        alert("Veuillez cliquer sur une date disponible dans le calendrier.");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Validation en cours...';
+      statusMessage.style.display = 'none';
+
+      const payload = {
+        course_id: courseSelect.value,
+        session_date: selectedDateInput.value,
+        participants_count: parseInt(participantsInput.value),
+        first_name: document.getElementById('firstName').value,
+        last_name: document.getElementById('lastName').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value
+      };
+
+      try {
+        const response = await fetch('/api/inscription', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          statusMessage.className = 'status-message success';
+          statusMessage.innerHTML = `
+            <strong>Réservation #${result.bookingId} confirmée !</strong><br>
+            Un e-mail de confirmation a été envoyé à <em>${payload.email}</em>.
+          `;
+          statusMessage.style.display = 'block';
+
+          registrationForm.reset();
+          selectedDateInput.value = '';
+          loadAvailability();
+          updatePrice();
+        } else {
+          throw new Error(result.error || 'Erreur lors de la réservation.');
+        }
+      } catch (err) {
+        statusMessage.className = 'status-message error';
+        statusMessage.textContent = err.message;
+        statusMessage.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Valider la réservation';
+      }
+    });
+
+    // Événements d'écoute
+    courseSelect.addEventListener('change', () => {
+      updatePrice();
+      loadAvailability();
+    });
+    participantsInput.addEventListener('change', updatePrice);
+
+    // Initialisation au chargement de la page
+    updatePrice();
+    loadAvailability();
+  </script>
+</body>
+</html>
