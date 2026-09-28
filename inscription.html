@@ -5,177 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inscription & Réservation — Cabanature</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    /* Styles spécifiques au calendrier et au formulaire d'inscription */
-    .booking-container {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
-
-    .form-card {
-      background: #ffffff;
-      border: 1px solid #e5dfd3;
-      border-radius: 12px;
-      padding: 30px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #213322;
-    }
-
-    .form-group input,
-    .form-group select {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 16px;
-      box-sizing: border-box;
-    }
-
-    .form-row {
-      display: flex;
-      gap: 20px;
-    }
-
-    .form-row .form-group {
-      flex: 1;
-    }
-
-    /* Calendrier custom */
-    .calendar-wrapper {
-      margin: 20px 0;
-      border: 1px solid #e5dfd3;
-      border-radius: 8px;
-      padding: 15px;
-      background: #faf8f5;
-    }
-
-    .calendar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-      text-align: center;
-    }
-
-    .calendar-day-head {
-      font-weight: bold;
-      color: #666;
-      font-size: 14px;
-      padding-bottom: 5px;
-    }
-
-    .calendar-day {
-      padding: 12px 5px;
-      border-radius: 6px;
-      background: #fff;
-      border: 1px solid #ddd;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-
-    .calendar-day.disabled {
-      background: #eee;
-      color: #aaa;
-      cursor: not-allowed;
-      border-color: #eee;
-    }
-
-    .calendar-day.selected {
-      background: #213322 !important;
-      color: #fff !important;
-      border-color: #213322 !important;
-    }
-
-    .calendar-day.full {
-      background: #ffebee;
-      color: #c62828;
-      cursor: not-allowed;
-      border-color: #ffcdd2;
-    }
-
-    .calendar-day.available {
-      background: #eef4ee;
-      color: #213322;
-      border-color: #c5d8c5;
-    }
-
-    .price-summary {
-      background: #eef4ee;
-      padding: 15px;
-      border-radius: 8px;
-      margin: 20px 0;
-      font-size: 18px;
-      font-weight: bold;
-      color: #213322;
-      text-align: right;
-    }
-
-    .btn-submit {
-      width: 100%;
-      background: #213322;
-      color: #fff;
-      padding: 15px;
-      border: none;
-      border-radius: 6px;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn-submit:hover {
-      background: #324a34;
-    }
-
-    .btn-submit:disabled {
-      background: #888;
-      cursor: not-allowed;
-    }
-
-    .status-message {
-      padding: 15px;
-      border-radius: 6px;
-      margin-top: 20px;
-      display: none;
-    }
-
-    .status-message.success {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-
-    .status-message.error {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
-
-    @media (max-width: 600px) {
-      .form-row {
-        flex-direction: column;
-        gap: 0;
-      }
-    }
-  </style>
 </head>
 <body>
 
@@ -195,16 +24,11 @@
     <div class="form-card">
       <form id="registrationForm">
         
-        <!-- Sélecteur de Cours -->
+        <!-- Sélecteur de Cours Dynamique -->
         <div class="form-group">
           <label for="courseSelect">1. Choisissez un atelier *</label>
           <select id="courseSelect" required>
-            <option value="1" data-price="45">Reconnaître les plantes sauvages (45 €/pers)</option>
-            <option value="2" data-price="75">Survie douce en forêt (75 €/pers)</option>
-            <option value="3" data-price="30">Observer les oiseaux au lever du jour (30 €/pers)</option>
-            <option value="4" data-price="55">Sculpter sa première cuillère (55 €/pers)</option>
-            <option value="5" data-price="40">Champignons : cueillir sans se tromper (40 €/pers)</option>
-            <option value="6" data-price="25">Bain de forêt guidé (25 €/pers)</option>
+            <option value="">Chargement des ateliers...</option>
           </select>
         </div>
 
@@ -260,7 +84,7 @@
 
         <!-- Récapitulatif du prix -->
         <div class="price-summary" id="priceSummary">
-          Total : 45 €
+          Total : 0 €
         </div>
 
         <!-- Bouton Valider -->
@@ -285,18 +109,47 @@
     const statusMessage = document.getElementById('statusMessage');
     const submitBtn = document.getElementById('submitBtn');
 
+    let coursesData = [];
     let bookedDates = {};
 
+    // 1. Charger les cours depuis la BDD (/api/courses)
+    async function loadCourses() {
+      try {
+        const response = await fetch(`${API_URL}/api/courses`);
+        if (response.ok) {
+          coursesData = await response.json();
+          courseSelect.innerHTML = '';
+          coursesData.forEach(course => {
+            const option = document.createElement('option');
+            option.value = course.id;
+            option.setAttribute('data-price', course.price_per_person);
+            option.setAttribute('data-capacity', course.max_capacity);
+            option.textContent = `${course.title} (${course.price_per_person} €/pers)`;
+            courseSelect.appendChild(option);
+          });
+          updatePrice();
+          loadAvailability();
+        }
+      } catch (err) {
+        console.error("Erreur chargement des cours :", err);
+        courseSelect.innerHTML = '<option value="">Erreur de chargement des ateliers</option>';
+      }
+    }
+
+    // 2. Calcul du prix total
     function updatePrice() {
       const selectedOption = courseSelect.options[courseSelect.selectedIndex];
+      if (!selectedOption) return;
       const pricePerPerson = parseFloat(selectedOption.getAttribute('data-price')) || 0;
       const count = parseInt(participantsInput.value) || 1;
       const total = pricePerPerson * count;
       priceSummary.textContent = `Total : ${total} €`;
     }
 
+    // 3. Charger les réservations pour ce cours (/api/availability/:courseId)
     async function loadAvailability() {
       const courseId = courseSelect.value;
+      if (!courseId) return;
       try {
         const response = await fetch(`${API_URL}/api/availability/${courseId}`);
         if (response.ok) {
@@ -313,6 +166,7 @@
       renderCalendar();
     }
 
+    // 4. Rendu du calendrier avec codes couleurs dynamiques (Vert / Rouge complet)
     function renderCalendar() {
       calendarGrid.innerHTML = '';
       const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
@@ -327,9 +181,12 @@
       const today = new Date();
       const year = today.getFullYear();
       const month = today.getMonth();
-      
-      // Obtenir le nombre de jours dans le mois en cours
       const totalDays = new Date(year, month + 1, 0).getDate();
+
+      // Récupérer la capacité max du cours sélectionné
+      const selectedOption = courseSelect.options[courseSelect.selectedIndex];
+      const maxCapacity = selectedOption ? parseInt(selectedOption.getAttribute('data-capacity')) || 8 : 8;
+      const requestedParticipants = parseInt(participantsInput.value) || 1;
 
       for (let i = 1; i <= totalDays; i++) {
         const dayDiv = document.createElement('div');
@@ -341,20 +198,16 @@
 
         dayDiv.textContent = i;
 
-        // Calculer le jour de la semaine pour positionner (0 = Dimanche, 6 = Samedi)
-        const currentFullDate = new Date(year, month, i);
-        const dayOfWeek = currentFullDate.getDay(); 
+        const seatsBooked = bookedDates[dateFormatted] || 0;
+        const seatsRemaining = maxCapacity - seatsBooked;
 
-        const seats = bookedDates[dateFormatted] || 0;
-        const maxCapacity = 8; // Capacité max par défaut de l'atelier
-
-        // Si la session est complète (8 places ou plus)
-        if (seats >= maxCapacity) {
+        // Si la session dépasse la capacité max ou ne peut plus accueillir le nombre de participants demandés
+        if (seatsBooked >= maxCapacity || seatsRemaining < requestedParticipants) {
           dayDiv.classList.add('full');
-          dayDiv.title = 'Complet';
+          dayDiv.title = seatsBooked >= maxCapacity ? 'Complet' : `Plus assez de places (${seatsRemaining} restante(s))`;
         } else {
-          // Disponible
           dayDiv.classList.add('available');
+          dayDiv.title = `${seatsRemaining} place(s) restante(s)`;
           dayDiv.addEventListener('click', () => {
             document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
             dayDiv.classList.add('selected');
@@ -370,6 +223,7 @@
       }
     }
 
+    // 5. Validation et soumission du formulaire
     registrationForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -427,13 +281,18 @@
     });
 
     courseSelect.addEventListener('change', () => {
+      selectedDateInput.value = ''; // Reset la date si on change de cours
       updatePrice();
       loadAvailability();
     });
-    participantsInput.addEventListener('change', updatePrice);
 
-    updatePrice();
-    loadAvailability();
+    participantsInput.addEventListener('change', () => {
+      updatePrice();
+      renderCalendar(); // Recalcule les disponibilités selon le nombre de participants
+    });
+
+    // Lancer le chargement initial
+    loadCourses();
   </script>
 </body>
 </html>
