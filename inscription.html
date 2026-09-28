@@ -293,7 +293,7 @@
     async function loadAvailability() {
       const courseId = courseSelect.value;
       try {
-        const response = await fetch(`/api/availability/${courseId}`);
+        const response = await fetch(`http://62.235.2.27/api/availability/${courseId}`);
         if (response.ok) {
           const data = await response.json();
           bookedDates = {};
