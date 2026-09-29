@@ -357,6 +357,7 @@
     }
 
     // 4. Rendu du calendrier avec navigation et codes couleurs dynamiques
+    // 4. Rendu du calendrier avec codes couleurs (Gris si pas de cours, Vert si dispo, Rouge si complet)
     function renderCalendar() {
       calendarGrid.innerHTML = '';
       const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
@@ -377,21 +378,29 @@
 
       const totalDays = new Date(year, month + 1, 0).getDate();
       
-      // Trouver le premier jour du mois (0 = Dimanche, 1 = Lundi, etc.) pour aligner la grille
       let firstDayIndex = new Date(year, month, 1).getDay();
-      firstDayIndex = firstDayIndex === 0 ? 6 : firstDayIndex - 1; // Ajustement pour commencer le lundi
+      firstDayIndex = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
 
-      // Cases vides pour le décalage du début de mois
       for (let i = 0; i < firstDayIndex; i++) {
         const emptyDiv = document.createElement('div');
         emptyDiv.className = 'calendar-day empty';
         calendarGrid.appendChild(emptyDiv);
       }
 
-      // Récupérer la capacité max du cours sélectionné
+      // Récupérer le cours actuellement sélectionné dans la liste
       const selectedOption = courseSelect.options[courseSelect.selectedIndex];
       const maxCapacity = selectedOption ? parseInt(selectedOption.getAttribute('data-capacity')) || 8 : 8;
       const requestedParticipants = parseInt(participantsInput.value) || 1;
+
+      // Trouver l'objet cours correspondant dans coursesData pour récupérer sa date exacte
+      const currentCourseId = courseSelect.value;
+      const currentCourse = coursesData.find(c => c.id === currentCourseId);
+      
+      // Extraire la date du cours (ex: "2026-10-09")
+      let courseDateStr = null;
+      if (currentCourse && currentCourse.course_date) {
+        courseDateStr = currentCourse.course_date.split('T')[0].split(' ')[0];
+      }
 
       for (let i = 1; i <= totalDays; i++) {
         const dayDiv = document.createElement('div');
@@ -403,21 +412,31 @@
 
         dayDiv.textContent = i;
 
-        const seatsBooked = bookedDates[dateFormatted] || 0;
-        const seatsRemaining = maxCapacity - seatsBooked;
+        // VÉRIFICATION : Est-ce que cet atelier a lieu ce jour-là ?
+        if (courseDateStr && dateFormatted === courseDateStr) {
+          // Un cours a lieu ce jour-là, on vérifie les places
+          const seatsBooked = bookedDates[dateFormatted] || 0;
+          const seatsRemaining = maxCapacity - seatsBooked;
 
-        // Si la session dépasse la capacité max ou ne peut plus accueillir le nombre de participants demandés
-        if (seatsBooked >= maxCapacity || seatsRemaining < requestedParticipants) {
-          dayDiv.classList.add('full');
-          dayDiv.title = seatsBooked >= maxCapacity ? 'Complet' : `Plus assez de places (${seatsRemaining} restante(s))`;
+          if (seatsBooked >= maxCapacity || seatsRemaining < requestedParticipants) {
+            dayDiv.classList.add('full');
+            dayDiv.title = seatsBooked >= maxCapacity ? 'Complet' : `Plus assez de places (${seatsRemaining} restante(s))`;
+          } else {
+            dayDiv.classList.add('available');
+            dayDiv.title = `${seatsRemaining} place(s) restante(s)`;
+            dayDiv.addEventListener('click', () => {
+              document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
+              dayDiv.classList.add('selected');
+              selectedDateInput.value = dateFormatted;
+            });
+          }
         } else {
-          dayDiv.classList.add('available');
-          dayDiv.title = `${seatsRemaining} place(s) restante(s)`;
-          dayDiv.addEventListener('click', () => {
-            document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
-            dayDiv.classList.add('selected');
-            selectedDateInput.value = dateFormatted;
-          });
+          // Aucun cours à cette date -> Grisé / Inactif
+          dayDiv.style.backgroundColor = '#f0f0f0';
+          dayDiv.style.color = '#bbb';
+          dayDiv.style.cursor = 'not-allowed';
+          dayDiv.style.borderColor = '#e0e0e0';
+          dayDiv.title = "Pas d'atelier ce jour-là";
         }
 
         if (selectedDateInput.value === dateFormatted) {
