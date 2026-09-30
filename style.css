@@ -603,17 +603,61 @@ a { color: inherit; text-decoration: none; }
   color: #c62828;
 }
 
-/* ---------- Footer ---------- */
+
+
+/* ---------- Footer Pro ---------- */
 
 .site-footer {
   background: var(--forest-deep);
   color: var(--linen-dark);
-  padding: 2rem clamp(1rem, 4vw, 3rem);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: space-between;
-  align-items: center;
+  padding: 3rem clamp(1rem, 4vw, 3rem) 1.5rem;
   font-size: 0.88rem;
 }
 
+.footer-content {
+  max-width: 72rem;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(244, 241, 234, 0.1);
+}
+
+.footer-col h4 {
+  color: var(--linen);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.footer-col p {
+  color: var(--linen-dark);
+  margin-bottom: 0.6rem;
+  font-size: 0.9rem;
+}
+
+.footer-col ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.footer-col ul li a {
+  color: var(--linen-dark);
+  transition: color 0.2s ease;
+}
+
+.footer-col ul li a:hover {
+  color: var(--gold);
+}
+
+.footer-bottom {
+  max-width: 72rem;
+  margin: 1.5rem auto 0;
+  text-align: center;
+  color: rgba(244, 241, 234, 0.6);
+  font-size: 0.8rem;
+}
