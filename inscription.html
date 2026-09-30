@@ -487,6 +487,8 @@
           statusMessage.innerHTML = `
             <strong>Réservation #${result.bookingId || 'réussie'} confirmée !</strong><br>
             Un e-mail de confirmation a été envoyé à <em>${payload.email}</em>.
+            Le paiement sur place uniquement en liquide.
+            
           `;
           statusMessage.style.display = 'block';
 
